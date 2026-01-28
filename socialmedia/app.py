@@ -2,6 +2,7 @@ from flask import Flask, redirect,render_template, request, url_for
 from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 local_server = True
@@ -57,8 +58,8 @@ def signup():
             flash("Phone number must be 10 digits","warning")
             return redirect(url_for('signup'))
             
-            
-        query = f"INSERT into `signup` (`first_name`,`last_name`,`email`,`password`,`phone`) VALUES ('{firstName}','{lastName}','{email}','{password}','{phoneNumber}')"
+        gen_pass=generate_password_hash(password)    
+        query = f"INSERT into `signup` (`first_name`,`last_name`,`email`,`password`,`phone`) VALUES ('{firstName}','{lastName}','{email}','{gen_pass}','{phoneNumber}')"
         with db.engine.begin() as conn:
             conn.exec_driver_sql(query)
             flash("Signup successful !.","success")
