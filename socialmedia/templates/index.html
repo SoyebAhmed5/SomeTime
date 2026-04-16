@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Home {% endblock %}
+{% block title %}Home {% endblock  title %}
 {% block body %}
-<h1>welcome to home page</h1>
+{% include 'messages.html' %}
+<h1>welcome to home page {{ current_user.email }}</h1>
 {% endblock body %}

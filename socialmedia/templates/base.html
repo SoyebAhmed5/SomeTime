@@ -47,15 +47,27 @@
           <li><a href="/gallery">Gallery</a></li>
           <li><a href="/search">Search</a></li>
           <li><a href="/profile">Profile</a></li>
-          <li class="dropdown"><a href="/signin"><span>Signin</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+
+          
+          {% if current_user.is_authenticated %}
+             <li class="dropdown"><a href="/"><span>Welcome, {{ current_user.first_name }}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="/signup">Signup</a></li>
-              
-              <li><a href="/login">Login</a></li>
               <li><a href="/logout">Logout</a></li>
-             
             </ul>
           </li>
+
+          {% else %}
+             <li class="dropdown"><a href="/signup"><span>Sign In</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="/signup">Signup</a></li>
+              <li><a href="/login">Login</a></li>
+            </ul>
+          </li>
+
+            
+          {% endif %}
+          
+         
           <li><a href="/contact">Contact</a></li>
           <li><a href="/about">About</a></li>
         </ul>

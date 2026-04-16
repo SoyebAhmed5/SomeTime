@@ -3,15 +3,31 @@ from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, login_manager, UserMixin, LoginManager
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
 
 
 local_server = True
 app=Flask(__name__)
 app.secret_key="=Soyebahmed@123"
 
+
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
 # db connection
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/socialmedia'
 db = SQLAlchemy(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Signup.query.get(int(user_id))
 
 class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,13 +36,16 @@ class Test(db.Model):
 
 # initializing signup model
 
-class Signup(db.Model):
+class Signup(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(100),unique=True)
     password = db.Column(db.String(100))
     phone = db.Column(db.Integer,unique=True)
+    
+    def get_id(self):
+        return self.user_id
 
 
 
@@ -69,6 +88,19 @@ def signup():
 
 @app.route("/login",methods=['GET','POST'])
 def login():
+    if request.method=='POST':
+        email=request.form.get("email")
+        password=request.form.get("pass1")
+        user = Signup.query.filter_by(email=email).first()
+        
+       
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            flash("Login successful !.","success")
+            return redirect(url_for('index'))
+        else:
+            flash("Invalid email or password","danger")
+            return redirect(url_for('login'))
     return render_template("login.html")
 
 
@@ -85,4 +117,4 @@ def test():
         return f"Database is not Connected, {e}"
     
 if __name__=="__main__":
-    app.run(debug=False)
+    app.run(debug=True)
