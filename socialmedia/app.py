@@ -3,18 +3,15 @@ from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_manager, UserMixin, LoginManager
+from flask_login import login_user, login_manager, UserMixin, LoginManager, login_required, logout_user
 
 import pymysql
 pymysql.install_as_MySQLdb()
 
 
-
 local_server = True
 app=Flask(__name__)
 app.secret_key="=Soyebahmed@123"
-
-
 
 
 login_manager = LoginManager()
@@ -33,10 +30,8 @@ class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
 
-
 # initializing signup model
-
-class Signup(UserMixin, db.Model):
+# class Signup(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
@@ -46,8 +41,6 @@ class Signup(UserMixin, db.Model):
     
     def get_id(self):
         return self.user_id
-
-
 
 @app.route("/")
 def index():
@@ -93,7 +86,6 @@ def login():
         password=request.form.get("pass1")
         user = Signup.query.filter_by(email=email).first()
         
-       
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash("Login successful !.","success")
@@ -103,6 +95,13 @@ def login():
             return redirect(url_for('login'))
     return render_template("login.html")
 
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("Logout Success","primary")
+    return redirect(url_for('login'))
 
 
 @app.route("/test/")
