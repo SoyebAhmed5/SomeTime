@@ -1,14 +1,10 @@
-{% extends "auth.html" %} {% block title %}Login{% endblock %} {% block forms
-%}
+{% extends "auth.html" %} {% block title %}Login{% endblock %} {% block forms %}
 
 <h1 class="text-center">Login</h1>
 
 <div class="card p-3">
-    {% include 'messages.html' %}
+  {% include 'messages.html' %}
   <form action="/login" method="post">
-    
-    
-
     <div class="form-group">
       <input
         class="form-control mb-2 p-3"
@@ -18,7 +14,6 @@
         required />
     </div>
 
-    
     <div class="form-group">
       <input
         class="form-control mb-2 p-3"
@@ -28,14 +23,11 @@
         required />
     </div>
 
-    
-
     <br />
 
     <div class="d-grid gap-3">
       <button type="submit" class="btn btn-primary">Login</button>
     </div>
-
   </form>
 </div>
 

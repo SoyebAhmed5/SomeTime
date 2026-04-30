@@ -31,7 +31,7 @@ class Test(db.Model):
     name = db.Column(db.String(50))
 
 # initializing signup model
-# class Signup(UserMixin, db.Model):
+class Signup(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
@@ -115,5 +115,8 @@ def test():
     except Exception as e:
         return f"Database is not Connected, {e}"
     
-if __name__=="__main__":
-    app.run(debug=True)
+@app.route("/posts",methods=['GET','POST'])
+def posts():
+    return render_template("posts.html")
+    
+
