@@ -41,6 +41,14 @@ class Signup(UserMixin, db.Model):
     
     def get_id(self):
         return self.user_id
+    
+# initializing posts model    
+class Posts(db.Model):
+    post_id= db.Column(db.Integer, primary_key=True)
+    email= db.Column(db.String(50))
+    title= db.Column(db.String(100))
+    description= db.Column(db.String(500))
+    image= db.Column(db.String(500))
 
 @app.route("/")
 def index():
