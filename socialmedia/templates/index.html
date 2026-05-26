@@ -2,5 +2,33 @@
 {% block title %}Home {% endblock  title %}
 {% block body %}
 {% include 'messages.html' %}
-<h1>welcome to home page {{ current_user.email }}</h1>
+<h1 class="text-center">Posts</h1>
+<hr>
+ <section id="details" class="details section">
+
+      <div class="container">
+
+        {% for d in data %}
+
+        <div class="row gy-4 align-items-center features-item">
+          <div class="col-md-5 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="100">
+            <img src="{{url_for('static', filename='uploads/' + d.image)}}" class="img-fluid" alt="">
+          </div>
+          <div class="col-md-7" data-aos="fade-up" data-aos-delay="100">
+            <h3>{{ d.title }}</h3>
+            <p class="fst-italic">
+              {{ d.description }}
+            </p>
+            <ul>
+                <li><i class="bi bi-check"></i><span> Uploaded by: {{ d.name }}</span></li>
+                <li><i class="bi bi-check"></i><span> Uploaded: {{ d.date }}</span></li>
+            </ul>
+          </div>
+        </div><!-- Features Item -->
+
+        {% endfor %}
+
+      </div>
+
+    </section><!-- /Details Section -->
 {% endblock body %}

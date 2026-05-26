@@ -4,6 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_manager, UserMixin, LoginManager, login_required, logout_user
+import os
+from werkzeug.utils import secure_filename
+
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -20,6 +23,12 @@ login_manager.login_view = "login"
 # db connection
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/socialmedia'
 db = SQLAlchemy(app)
+
+# Configuration for handling files
+app.config['UPLOAD_FOLDER']='static/uploads/'
+app.config['ALLOWED_EXTENSIONS']={'png','jpg','jpeg','gif'}
+app.config['MAX_CONTENT_LENGTH']=16*1024*1024 #16mb max upload size
+
 
 
 @login_manager.user_loader
@@ -46,13 +55,16 @@ class Signup(UserMixin, db.Model):
 class Posts(db.Model):
     post_id= db.Column(db.Integer, primary_key=True)
     email= db.Column(db.String(50))
+    name= db.Column(db.String(100))
     title= db.Column(db.String(100))
     description= db.Column(db.String(500))
     image= db.Column(db.String(500))
+    date= db.Column(db.String(100))
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    data=Posts.query.all()
+    return render_template("index.html",data=data)
 
 @app.route("/signup",methods=['GET','POST'])
 def signup():
@@ -122,9 +134,35 @@ def test():
             return "Database is connected"
     except Exception as e:
         return f"Database is not Connected, {e}"
+ 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+ 
+ 
     
 @app.route("/posts",methods=['GET','POST'])
 def posts():
+    if request.method=="POST":
+        email=request.form['email']
+        name=request.form['name']
+        title=request.form['title']
+        description=request.form['description']
+        file=request.files['image']
+        if file and allowed_file(file.filename):
+            # save the file in the upload folder
+            filename=secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            
+            # write the query to save in db
+            query=Posts(email=email,name=name,title=title,description=description,image=file.filename)
+            db.session.add(query)
+            db.session.commit()
+            flash("Post is Uploaded","info")
+            return redirect(url_for('index'))
+        else:
+            flash("Please use 'png', 'jpg', 'jpeg', 'gif' file format","warning")
+        
+    
     return render_template("posts.html")
     
 
