@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_manager, UserMixin, LoginManager, login_required, logout_user
 import os
 from werkzeug.utils import secure_filename
-
+from datetime import datetime
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -60,6 +60,18 @@ class Posts(db.Model):
     description= db.Column(db.String(500))
     image= db.Column(db.String(500))
     date= db.Column(db.String(100))
+    time= db.Column(db.String(100))
+    likes= db.Column(db.Integer,nullable=True,default=0)
+
+
+# Initializing the Comments Model
+class Comments(db.Model):
+    comment_id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer)
+    comment = db.Column(db.String(500))
+    commentedBy = db.Column(db.String(100))
+    commentedOn= db.Column(db.String(100))
+   
 
 @app.route("/")
 def index():
@@ -148,13 +160,17 @@ def posts():
         title=request.form['title']
         description=request.form['description']
         file=request.files['image']
+        date=datetime.now()
+        datee=date.date()
+        time=date.time()
+        
         if file and allowed_file(file.filename):
             # save the file in the upload folder
             filename=secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
             
             # write the query to save in db
-            query=Posts(email=email,name=name,title=title,description=description,image=file.filename)
+            query=Posts(email=email,name=name,title=title,description=description,image=file.filename,date=datee,time=time,)
             db.session.add(query)
             db.session.commit()
             flash("Post is Uploaded","info")
