@@ -181,4 +181,13 @@ def posts():
     
     return render_template("posts.html")
     
-
+# Logic for Likes
+@app.route('/like/<int:id>',methods=['GET','POST'])
+def like(id):
+    post = Posts.query.filter_by(post_id=id).first()
+    if post.likes == None:
+        post.likes = 1
+        db.session.commit()
+    post.likes = post.likes + 1
+    db.session.commit()
+    return redirect(url_for('index'))

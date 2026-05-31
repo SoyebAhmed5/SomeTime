@@ -20,8 +20,13 @@
               {{ d.description }}
             </p>
             <ul>
-                <li><i class="bi bi-check"></i><span> Uploaded by: {{ d.name }}</span></li>
-                <li><i class="bi bi-check"></i><span> Uploaded: {{ d.date }}</span></li>
+                <li><i class="bi bi-check"></i><span> Uploaded by : {{ d.name }}</span></li>
+                <li><i class="bi bi-check"></i><span> Uploaded On : {{ d.date }}</span></li>
+                <li><i class="bi bi-check"></i><span> Uploaded Time : {{ d.time }}</span></li>
+                <a href="/like/{{d.post_id}}" ><li><h4><i class="fa-regular fa-heart fa-beat fa-2xl"></i> Like</h4></li></a>
+
+                <li><i class="fa-regular fa-thumbs-up fa-beat fa-2xl"></i> Liked By {{d.likes}}</li>
+
             </ul>
           </div>
         </div><!-- Features Item -->
