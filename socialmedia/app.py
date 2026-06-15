@@ -191,3 +191,26 @@ def like(id):
     post.likes = post.likes + 1
     db.session.commit()
     return redirect(url_for('index'))
+
+
+@app.route('/comment/<int:id>',methods=['GET','POST'])
+def comment(id):
+    if request.method == 'POST':
+        comment = request.form['comment']
+        commentedBy = request.form['commented']
+        commentedOn = datetime.now()
+        query = Comments(post_id=id, comment=comment, commentedBy=commentedBy, commentedOn=commentedOn)
+        db.session.add(query)
+        db.session.commit()
+        flash("Comment added successfully","success")
+    return redirect(url_for('index'))
+
+
+@app.route('/viewcomment/<int:id>',methods=['GET','POST'])
+def viewcomment(id):
+    post = Comments.query.filter_by(post_id=id).all()
+    return render_template("comments.html", post=post)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
