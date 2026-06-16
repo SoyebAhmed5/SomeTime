@@ -71,7 +71,14 @@ class Comments(db.Model):
     comment = db.Column(db.String(500))
     commentedBy = db.Column(db.String(100))
     commentedOn= db.Column(db.String(100))
-   
+
+
+class Friends(db.Model):
+    friends_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    requested_id = db.Column(db.Integer)
+    isAccepted = db.Column(db.String(10))
+
 
 @app.route("/")
 def index():
@@ -210,6 +217,11 @@ def comment(id):
 def viewcomment(id):
     post = Comments.query.filter_by(post_id=id).all()
     return render_template("comments.html", post=post)
+
+
+@app.route('/connect',methods=['GET','POST'])
+def connect():
+    return render_template("connect.html")
 
 
 if __name__ == "__main__":
