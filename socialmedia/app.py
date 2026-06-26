@@ -221,8 +221,44 @@ def viewcomment(id):
 
 @app.route('/connect',methods=['GET','POST'])
 def connect():
-    return render_template("connect.html")
+    users = Signup.query.all()
+    return render_template("connect.html",users=users)
 
+
+@app.route("/connectfriend/<path:ids>", methods=['GET'])
+def connectFriends(ids):
+    print(ids)
+    data = ids.split("/")
+    print(data)
+    users = Signup.query.all()
+    d1 = Friends.query.filter_by(user_id=data[1]).first()
+    d2 = Friends.query.filter_by(requested_id=data[0]).first()
+    if d1 or d2:
+        flash("Friend request already sent","primary")
+        return render_template("connect.html",users=users)
+    query = Friends(user_id=data[1], requested_id=data[0], isAccepted="False")
+    db.session.add(query)
+    db.session.commit()
+    flash("Friend request sent successfully","success")
+    return render_template("connect.html",users=users)
+
+
+@app.route("/remove/<path:ids>", methods=['GET'])
+def remove(ids):
+    print(ids)
+    data = ids.split("/")
+    print(data)
+    users = Signup.query.all()
+    d1 = Friends.query.filter_by(user_id=data[1]).first()
+    d2 = Friends.query.filter_by(requested_id=data[0]).first()
+    if d1 or d2:
+        query = f"DELETE FROM `friends` WHERE `friends`.`user_id` = {data[1]} AND `friends`.`requested_id` = {data[0]}"
+        with db.engine.begin() as conn:
+            conn.exec_driver_sql(query)
+            flash("Request Cancelled", "success")
+            return render_template("connect.html",users=users)
+    return render_template("connect.html",users=users)
+     
 
 if __name__ == "__main__":
     app.run(debug=True)
