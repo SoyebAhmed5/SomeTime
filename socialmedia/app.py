@@ -7,6 +7,7 @@ from flask_login import login_user, login_manager, UserMixin, LoginManager, logi
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from flask_login import current_user
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -47,6 +48,7 @@ class Signup(UserMixin, db.Model):
     email = db.Column(db.String(100),unique=True)
     password = db.Column(db.String(100))
     phone = db.Column(db.Integer,unique=True)
+    profileimage = db.Column(db.String(500))
     
     def get_id(self):
         return self.user_id
@@ -82,6 +84,8 @@ class Friends(db.Model):
 
 @app.route("/")
 def index():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
     data=Posts.query.all()
     return render_template("index.html",data=data)
 
@@ -161,6 +165,8 @@ def allowed_file(filename):
     
 @app.route("/posts",methods=['GET','POST'])
 def posts():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
     if request.method=="POST":
         email=request.form['email']
         name=request.form['name']
@@ -202,6 +208,8 @@ def like(id):
 
 @app.route('/comment/<int:id>',methods=['GET','POST'])
 def comment(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         comment = request.form['comment']
         commentedBy = request.form['commented']
@@ -221,6 +229,8 @@ def viewcomment(id):
 
 @app.route('/connect',methods=['GET','POST'])
 def connect():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
     users = Signup.query.all()
     return render_template("connect.html",users=users)
 
@@ -259,6 +269,13 @@ def remove(ids):
             return render_template("connect.html",users=users)
     return render_template("connect.html",users=users)
      
+     
+@app.route("/profile",methods=['GET','POST'])
+def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    userdata = Signup.query.filter_by(email=current_user.email).first()
+    return render_template("profile.html",userdata=userdata)
 
 if __name__ == "__main__":
     app.run(debug=True)

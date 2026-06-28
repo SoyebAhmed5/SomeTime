@@ -1,0 +1,20 @@
+{% extends "auth.html" %}
+ {% block title %}Profile{% endblock %} 
+{% block forms %}
+
+<h1 class="text-center">View Profile</h1>
+
+<div class="card p-3">
+  {% include 'messages.html' %}
+  <img src="{{ url_for('static', filename='uploads/' + userdata.profileimage) }}" class="profileimg" alt="">
+  <h5 class="text-dark">Name: {{ userdata.first_name }} {{ userdata.last_name }}</h5>
+  <hr>
+  <h5 class="text-dark">Email: {{ userdata.email }}</h5>
+  <hr>
+  <h5 class="text-dark">Phone Number: {{ userdata.phone }}</h5>
+
+  <hr>
+  <a href="/editprofile/{{ userdata.user_id }}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+</div>
+
+{% endblock forms %}
