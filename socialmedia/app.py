@@ -277,5 +277,45 @@ def profile():
     userdata = Signup.query.filter_by(email=current_user.email).first()
     return render_template("profile.html",userdata=userdata)
 
+@app.route("/editprofile/<int:id>",methods=["GET",'POST'])
+def editprofile(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    userdata = Signup.query.filter_by(user_id=id).first()
+    return render_template("editprofile.html",userdata=userdata)
+
+@app.route("/updateprofile/<int:id>",methods=["GET",'POST'])
+def updateprofile(id):
+    userdata = Signup.query.filter_by(email=current_user.email).first()
+    if request.method == 'POST':
+        firstName = request.form.get("fname")
+        lastName=request.form.get("lname")
+        email=request.form.get("email")
+        phoneNumber=request.form.get("phone")
+        file = request.files['profileimage']
+        if len(phoneNumber) != 10:
+            flash("Please Enter 10 digit number")
+            return redirect(url_for("profile"))
+        if file and allowed_file(file.filename):
+             # Save the file in the uploads folder
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            
+            query = f"UPDATE `signup` SET `first_name` = '{firstName}' , `last_name` = '{lastName}', `email` = '{email}', `phone` = '{phoneNumber}', `profileimage` = '{file.filename}' WHERE `signup`.`user_id`={id}"
+            
+            with db.engine.begin() as conn:
+                conn.exec_driver_sql(query)
+                flash("Profile Update Success","success")
+                return redirect(url_for("profile"))
+            
+        else:
+            query1 = f"UPDATE `signup` SET `first_name` = '{firstName}' , `last_name` = '{lastName}', `email` = '{email}', `phone` = '{phoneNumber}' WHERE `signup`.`user_id`={id}"
+            
+            with db.engine.begin() as conn:
+                conn.exec_driver_sql(query1)
+                flash("Profile Update Success","success")
+                return redirect(url_for("profile"))
+    return render_template("profile.html",userdata=userdata)       
+
 if __name__ == "__main__":
     app.run(debug=True)
