@@ -18,9 +18,9 @@
     <tbody>
         {% for user in users %}
            <tr>
-             <th scope="row">{{ user.first_name }} {{user.last_name}}</th>
-             <th scope="row"><a href="/connectfriend/{{ user.user_id}}/{{ current_user.user_id }}" class="btn btn-outline btn-sm btn-primary">Add</a></th>
-             <th scope="row"><a href="/remove/{{ user.user_id}}/{{ current_user.user_id }}" class="btn btn-outline btn-sm btn-dark">Remove</a></th>
+             <th scope="row">{{ user.first_name }} {{ user.last_name }}</th>
+             <th scope="row"><a href="/connectfriend/{{ user.user_id }}/{{ current_user.user_id }}" class="btn btn-outline btn-sm btn-primary">Add</a></th>
+             <th scope="row"><a href="/remove/{{ user.user_id }}/{{ current_user.user_id }}" class="btn btn-outline btn-sm btn-dark">Remove</a></th>
            </tr>
         {% endfor %}
     </tbody>

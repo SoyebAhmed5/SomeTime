@@ -274,8 +274,15 @@ def remove(ids):
 def profile():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
+    
     userdata = Signup.query.filter_by(email=current_user.email).first()
-    return render_template("profile.html",userdata=userdata)
+    friends = Friends.query.filter_by(user_id=current_user.user_id).all()
+    getallmypost = Posts.query.filter_by(email=current_user.email).all()
+    myids = []
+    for i in friends:
+        signupdata = Signup.query.filter_by(user_id=i.requested_id).first()
+        myids.append(signupdata)
+    return render_template("profile.html",userdata=userdata,myids=myids,getallmypost=getallmypost)
 
 @app.route("/editprofile/<int:id>",methods=["GET",'POST'])
 def editprofile(id):
@@ -316,6 +323,18 @@ def updateprofile(id):
                 flash("Profile Update Success","success")
                 return redirect(url_for("profile"))
     return render_template("profile.html",userdata=userdata)       
+
+
+@app.route("/accept/<path:ids>", methods=['GET'])
+def acceptfriendrequest(ids):
+   
+    data = ids.split("/")
+    query = f"UPDATE `friends` SET `isAccepted` = 'True' WHERE `friends`.`requested_id` = '{ data[0] }' and `friends`.`user_id` = '{ data[1] }'"
+    with db.engine.begin() as conn:
+        conn.exec_driver_sql(query)
+        flash("Friend Request Accepted","success")
+        return redirect(url_for("profile"))
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
