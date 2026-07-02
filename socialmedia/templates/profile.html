@@ -47,20 +47,18 @@
             width="100px"
             alt="" />
         </th>
-        <th scope="row">{{ friend.first_name }}{{ friend.last_name }}</th>
+        <th scope="row">{{ friend.first_name }} {{ friend.last_name }}</th>
         <th scope="row">
           <a
             href="/accept/{{ friend.user_id}}/{{ current_user.user_id }}"
-            class="btn btn-outline btn-sm btn-dark"
-            ><i class="fa-solid fa-check fa-beat fa-2xl"></i
-          ></a>
+            class="btn btn-outline btn-sm"
+            ><i class="fa-regular fa-circle-check fa-beat fa-2xl fa-width-auto" style="color: rgb(99, 230, 190);"></i></a>
         </th>
         <th scope="row">
           <a
             href="/remove/{{ friend.user_id}}/{{ current_user.user_id }}"
-            class="btn btn-outline btn-sm btn-dark"
-            ><i class="fa-solid fa-xmark fa-beat fa-2xl"></i
-          ></a>
+            class="btn btn-outline btn-sm"
+            ><i class="fa-solid fa-x fa-beat-fade fa-2xl fa-width-auto" style="color: rgb(229, 53, 6);"></i></a>
         </th>
       </tr>
       {% endfor %}
