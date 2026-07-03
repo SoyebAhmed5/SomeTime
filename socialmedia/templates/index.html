@@ -23,10 +23,10 @@
                 <li><i class="bi bi-check"></i><span> Uploaded by : {{ d.name }}</span></li>
                 <li><i class="bi bi-check"></i><span> Uploaded On : {{ d.date }}</span></li>
                 <li><i class="bi bi-check"></i><span> Uploaded Time : {{ d.time }}</span></li>
-                <a href="/like/{{d.post_id}}" ><li><h4><i class="fa-regular fa-heart fa-beat fa-2xl"></i> Like</h4></li></a>
-
-               <span class="d-flex gap-3"> 
-                <li><i class="fa-regular fa-thumbs-up fa-beat fa-2xl"></i> Liked By {{d.likes}} </li>
+                
+                <span class="d-flex gap-3"> 
+                 <a href="/like/{{d.post_id}}" ><i class="fa-regular fa-heart fa-beat fa-2xl"></i>Liked By {{d.likes}}</a>
+                <!-- <li><i class="fa-regular fa-thumbs-up fa-beat fa-2xl"></i> Liked By {{d.likes}} </li> -->
                 <a href="/viewcomment/{{d.post_id}}"><i class="fa-solid fa-eye fa-fade fa-2xl"></i> View Comments</a>
               </span>
 

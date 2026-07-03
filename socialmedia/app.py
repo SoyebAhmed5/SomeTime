@@ -3,7 +3,7 @@ from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_manager, UserMixin, LoginManager, login_required, logout_user
+from flask_login import login_user, login_manager, UserMixin, LoginManager, login_required, logout_user, current_user, logout_user, LoginManager
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -81,13 +81,33 @@ class Friends(db.Model):
     requested_id = db.Column(db.Integer)
     isAccepted = db.Column(db.String(10))
 
+class Contact(db.Model):
+    contact_id = db.Column(db.Integer, primary_key=True)
+    email= db.Column(db.String(100))
+    description= db.Column(db.String(500))
+   
+   
+class Like(db.Model):
+    __tablename__ = "likes"
 
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    post_id = db.Column(db.Integer, nullable=False)
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'post_id', name='unique_like'),
+    ) 
+    
 @app.route("/")
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     data=Posts.query.all()
     return render_template("index.html",data=data)
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 @app.route("/signup",methods=['GET','POST'])
 def signup():
@@ -121,6 +141,20 @@ def signup():
             return redirect(url_for('login'))
             
     return render_template("signup.html")
+
+
+@app.route("/contact",methods=['GET','POST'])
+def contact():
+    if request.method=='POST':
+        email=request.form.get("email")
+        desc=request.form.get("desc")
+        query = Contact(email=email,description=desc)
+        db.session.add(query)
+        db.session.commit()
+        flash("We will get back to you soon")
+        return render_template("contact.html") 
+    return render_template("contact.html") 
+
 
 @app.route("/login",methods=['GET','POST'])
 def login():
@@ -162,6 +196,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.',1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
  
  
+
     
 @app.route("/posts",methods=['GET','POST'])
 def posts():
@@ -195,16 +230,39 @@ def posts():
     return render_template("posts.html")
     
 # Logic for Likes
-@app.route('/like/<int:id>',methods=['GET','POST'])
+@app.route('/like/<int:id>',methods=['POST','GET'])
+@login_required
 def like(id):
     post = Posts.query.filter_by(post_id=id).first()
-    if post.likes == None:
-        post.likes = 1
-        db.session.commit()
-    post.likes = post.likes + 1
-    db.session.commit()
-    return redirect(url_for('index'))
 
+    if not post:
+        flash("Post not found.", "danger")
+        return redirect(url_for("index"))
+
+    # Check if the current user has already liked this post
+    existing_like = Like.query.filter_by(
+        user_id=current_user.user_id,
+        post_id=id
+    ).first()
+
+    if existing_like:
+        flash("You already liked this post.", "info")
+        return redirect(url_for("index"))
+
+    # Save the user's like
+    like = Like(
+        user_id=current_user.user_id,
+        post_id=id
+    )
+
+    db.session.add(like)
+
+    post.likes += 1
+
+    db.session.commit()
+
+    flash("Post liked!", "success")
+    return redirect(url_for("index"))
 
 @app.route('/comment/<int:id>',methods=['GET','POST'])
 def comment(id):
@@ -231,7 +289,7 @@ def viewcomment(id):
 def connect():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    users = Signup.query.all()
+    users = Signup.query.filter(Signup.user_id != current_user.user_id).all()
     return render_template("connect.html",users=users)
 
 
@@ -280,8 +338,9 @@ def profile():
     getallmypost = Posts.query.filter_by(email=current_user.email).all()
     myids = []
     for i in friends:
-        signupdata = Signup.query.filter_by(user_id=i.requested_id).first()
-        myids.append(signupdata)
+        if i.isAccepted == "False":
+            signupdata = Signup.query.filter_by(user_id=i.requested_id).first()
+            myids.append(signupdata)
     return render_template("profile.html",userdata=userdata,myids=myids,getallmypost=getallmypost)
 
 @app.route("/editprofile/<int:id>",methods=["GET",'POST'])
@@ -335,6 +394,7 @@ def acceptfriendrequest(ids):
         flash("Friend Request Accepted","success")
         return redirect(url_for("profile"))
     
+
 
 if __name__ == "__main__":
     app.run(debug=True)

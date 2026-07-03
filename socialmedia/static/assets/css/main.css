@@ -839,10 +839,11 @@ section,
 }
 
 .hero p {
-  color: color-mix(in srgb, var(--default-color), transparent 30%);
+  /* color: color-mix(in srgb, var(--default-color), transparent 30%); */
   margin: 5px 0 30px 0;
   font-size: 22px;
   font-weight: 400;
+  
 }
 
 .hero .btn-get-started {
