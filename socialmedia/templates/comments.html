@@ -6,6 +6,9 @@
 
 <div class="card p-3">
     {% include 'messages.html' %}
+    {% if post|length == 0 %}
+        <h5 class="text-black">No Comments Yet</h5>
+    {% endif %}
 
     {% for p in post %}
         <h5 class="text-black">{{ p.comment }}</h5>

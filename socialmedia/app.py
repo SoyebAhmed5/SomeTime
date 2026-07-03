@@ -230,7 +230,7 @@ def posts():
     return render_template("posts.html")
     
 # Logic for Likes
-@app.route('/like/<int:id>',methods=['POST','GET'])
+@app.route('/like/<int:id>',methods=['POST'])
 @login_required
 def like(id):
     post = Posts.query.filter_by(post_id=id).first()
