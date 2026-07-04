@@ -8,6 +8,9 @@ import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask_login import current_user
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -22,7 +25,22 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 # db connection
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/socialmedia'
+
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/socialmedia'
+
+
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL",
+    "mysql+pymysql://root:@localhost/socialmedia"
+)
+
+app.secret_key = os.getenv(
+    "SECRET_KEY",
+    "SoyebAhmedLocalSecret"
+)
 db = SQLAlchemy(app)
 
 # Configuration for handling files
