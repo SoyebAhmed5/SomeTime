@@ -1,28 +1,37 @@
-{% extends "auth.html" %} 
-{% block title %} Home {% endblock title %}
-{% block forms %}
+{% extends "auth.html" %} {% block title %} Home {% endblock title %} {% block
+forms %}
 <h1 class="text-center">Connect Now</h1>
-{% endblock forms %} 
-{% block body %} 
-{% include 'messages.html' %}
+{% endblock forms %} {% block body %} {% include 'messages.html' %}
 
-<div class="container m-4">
+<div class="container m">
   <table class="table">
-   <thead>
-     <tr>
+    <thead>
+      <tr>
         <th scope="col">Username</th>
         <th scope="col">Add Friend</th>
         <th scope="col">Remove Friend</th>
-     </tr>
+      </tr>
     </thead>
     <tbody>
-        {% for user in users %}
-           <tr>
-             <th scope="row">{{ user.first_name }} {{ user.last_name }}</th>
-             <th scope="row"><a href="/connectfriend/{{ user.user_id }}/{{ current_user.user_id }}" class="btn btn-outline btn-sm btn-primary">Add</a></th>
-             <th scope="row"><a href="/remove/{{ user.user_id }}/{{ current_user.user_id }}" class="btn btn-outline btn-sm btn-dark">Remove</a></th>
-           </tr>
-        {% endfor %}
+      {% for user in users %}
+      <tr>
+        <th scope="row">{{ user.first_name }} {{ user.last_name }}</th>
+        <th scope="row">
+          <a
+            href="/connectfriend/{{ user.user_id }}/{{ current_user.user_id }}"
+            class="btn btn-outline btn-sm btn-primary"
+            >Add</a
+          >
+        </th>
+        <th scope="row">
+          <a
+            href="/remove/{{ user.user_id }}/{{ current_user.user_id }}"
+            class="btn btn-outline btn-sm btn-dark"
+            >Remove</a
+          >
+        </th>
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
