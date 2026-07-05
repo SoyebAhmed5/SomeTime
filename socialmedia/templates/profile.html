@@ -38,11 +38,16 @@
       </tr>
     </thead>
     <tbody>
-      {% for friend in myids %}
-      <tr>
-        <th scope="row">
-          <img
-            src="{{ url_for('static',filename='uploads/'+friend.profileimage) }}"
+      {% if myids|length == 0 %}
+        <tr>
+          <td colspan="4" class="text-center">No Friends Request.</td>
+        </tr>
+      {% else %}
+        {% for friend in myids %}
+        <tr>
+          <th scope="row">
+            <img
+              src="{{ url_for('static',filename='uploads/'+friend.profileimage) }}"
             height="100px"
             width="100px"
             alt="" />
