@@ -248,7 +248,7 @@ def posts():
     return render_template("posts.html")
     
 # Logic for Likes
-@app.route('/like/<int:id>',methods=['POST'])
+@app.route('/like/<int:id>',methods=['POST','GET'])
 @login_required
 def like(id):
     post = Posts.query.filter_by(post_id=id).first()
@@ -289,7 +289,7 @@ def comment(id):
     if request.method == 'POST':
         comment = request.form['comment']
         commentedBy = request.form['commented']
-        commentedOn = datetime.now()
+        commentedOn = datetime.now().strftime("%I:%M %p")
         query = Comments(post_id=id, comment=comment, commentedBy=commentedBy, commentedOn=commentedOn)
         db.session.add(query)
         db.session.commit()
